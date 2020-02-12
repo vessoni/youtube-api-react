@@ -2,15 +2,23 @@ import React from 'react';
 
 import { Grid } from '@material-ui/core';
 
-import { SearchBar, VideoDetails } from './components';
+import { SearchBar, VideoDetails, VideoList } from './components';
 
 
 import youtube from './api/youtube';
 
 class App extends React.Component {
   state = {
-    video: [],
+    videos: [],
     selectedVideo: null,
+  }
+
+  componentDidMount(){
+      this.handleSubmit('Top10');
+  }
+
+  onVideoSelect = (video) => {
+    this.setState({selectedVideo: video});
   }
 
   handleSubmit = async (SearchTerm) => {
@@ -19,6 +27,7 @@ class App extends React.Component {
         part: 'snippet',
         q: SearchTerm,
         maxResults: 5,
+        type: 'video',
         key: 'AIzaSyCpwfozr6iK7gqrEL0IIPeVfY7ExGPNg_Y',
       }
     });
@@ -26,6 +35,7 @@ class App extends React.Component {
   }
 
   render(){
+    const { selectedVideo, videos } = this.state;
     return(
       <Grid justify="center" container spacing={10}> 
         <Grid item xs={12}>
@@ -34,11 +44,11 @@ class App extends React.Component {
                 <SearchBar onFormSubmit={this.handleSubmit} />
               </Grid>
               <Grid item xs={8}>
-                <VideoDetails/>
+                <VideoDetails video={selectedVideo}/>
               </Grid>
               <Grid item xs={4}>
-                 {/* Video List */}
-                </Grid>
+                <VideoList videos={videos} onVideoSelect={this.onVideoSelect} />
+              </Grid>
             </Grid>
         </Grid>
       </Grid>
