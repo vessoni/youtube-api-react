@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronLeft } from 'react-icons/fa'
-
-import { MainHeader } from './styles';
+import { SearchBar, FooterPage } from '../../components';
 
 import { StyleVideoGalery, PageActions
 } from '../../components/VideoGalery/styles'
@@ -35,12 +33,12 @@ class Search extends React.Component {
   }
 
   apiGetResolutionNext = async () => {
-    const { next, SearchTerm } = this.state;
+    const { next, searchTerm } = this.state;
     const response = await youtube.get('search', {
       params: {
         part: 'snippet',
-        q: SearchTerm,
-        maxResults: 10,
+        q: searchTerm,
+        maxResults: 15,
         type: 'video',
         pageToken: next,
         key: 'AIzaSyAhw76Rj9Mkb7wRhgPs5H_rK2vJFS9MFPE',
@@ -51,17 +49,17 @@ class Search extends React.Component {
       videos: response.data.items, 
       next: response.data.nextPageToken, 
       prev: response.data.prevPageToken, 
-      searchTerm:'mostPopular'
+      searchTerm: searchTerm,
     });
   }
 
   apiGetResolutionPrev = async () => {
-    const { prev, SearchTerm } = this.state;
+    const { prev, searchTerm } = this.state;
     const response = await youtube.get('search', {
       params: {
         part: 'snippet',
-        q: SearchTerm,
-        maxResults: 10,
+        q: searchTerm,
+        maxResults: 15,
         type: 'video',
         pageToken: prev,
         key: 'AIzaSyAhw76Rj9Mkb7wRhgPs5H_rK2vJFS9MFPE',
@@ -72,7 +70,7 @@ class Search extends React.Component {
       videos: response.data.items, 
       next: response.data.nextPageToken, 
       prev: response.data.prevPageToken, 
-      searchTerm:'mostPopular'
+      searchTerm:searchTerm,
     });
   }
 
@@ -88,18 +86,28 @@ class Search extends React.Component {
     }
   };
 
+  async componentDidUpdate() {
+
+    const { searchTerm } = this.state;
+    const { match } = this.props;
+    const newSearchTerm = match.params.item;
+
+    if (searchTerm !== newSearchTerm) {
+      window.location.reload();
+    }
+  }
 
 
   onVideoSelect = (video) => {
     this.setState({selectedVideo: video});
   }
 
-  handleSubmit = async (SearchTerm) => {
+  handleSubmit = async (searchTerm) => {
     const response = await youtube.get('search', {
       params: {
         part: 'snippet',
-        q: SearchTerm,
-        maxResults: 10,
+        q: searchTerm,
+        maxResults: 15,
         type: 'video',
         key: 'AIzaSyAhw76Rj9Mkb7wRhgPs5H_rK2vJFS9MFPE',
       }
@@ -108,32 +116,20 @@ class Search extends React.Component {
       videos: response.data.items, 
       next: response.data.nextPageToken, 
       prev: response.data.prevPageToken, 
-      searchTerm: SearchTerm
+      searchTerm: searchTerm
     });
   }
 
   render(){
-    const { page, videos } = this.state;
+    const { page, videos, searchTerm } = this.state;
     
     return(
       <>
-         <MainHeader>
-          <div>
-            <nav>
-              <ul>
-                <li>
-                  <Link to="/">
-                     <FaChevronLeft size={40}/> Return
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </MainHeader>
+        <SearchBar searchTerm={searchTerm}/>
         <StyleVideoGalery>
       {videos.map(video => (
         
-        <Link to={`/detail/${video.id}`} key={video.id.videoId}>
+        <Link to={`/detail/${video.id.videoId}`} key={video.id.videoId}>
           <Paper>
           <img
             src={video.snippet.thumbnails.high.url}
@@ -159,6 +155,7 @@ class Search extends React.Component {
             Next
           </button>
         </PageActions>
+        <FooterPage />
         </>
      
     )

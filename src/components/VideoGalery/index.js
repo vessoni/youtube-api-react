@@ -22,7 +22,7 @@ class VideoGalery extends React.Component {
       params: {
         chart: 'mostPopular',
         part: 'snippet',
-        maxResults: 10,
+        maxResults: 15,
         type: 'video',
         key: 'AIzaSyAhw76Rj9Mkb7wRhgPs5H_rK2vJFS9MFPE',
       }
